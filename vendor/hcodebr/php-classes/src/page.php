@@ -9,20 +9,26 @@ use Rain\Tpl;
 class Page{
 
 	private $tpl;
-	private $defaults=["data"=>[]];
+	private $defaults=[
+		"header"=>true,
+		"footer"=>true,
+		"data"=>[]];
 	private $options=[];
 
 
-	public function __construct($opts=array()){
+	public function __construct($opts=array(),$tpl_dir="/views/"){
 
-		$options=array_merge($this->defaults,$opts);
 
+		//$this->$defaults["data"]["session"]=$_SESSION;
+		$this->options=array_merge($this->defaults,$opts);
+		
 
 
 			//array de configuração do tpl
 	$config=array(
-		"tpl_dir"=>$_SERVER['DOCUMENT_ROOT']."/views/",
-		"cache_dir"=>$_SERVER['DOCUMENT_ROOT']."/cache-views/"
+		"tpl_dir"=>$_SERVER['DOCUMENT_ROOT'].$tpl_dir,
+		"cache_dir"=>$_SERVER['DOCUMENT_ROOT']."/cache-views/",
+		 "debug"         => false
 
 	);
 
@@ -31,9 +37,14 @@ class Page{
 	$this->tpl=new Tpl();
 
 	
-	$this->foreachPage($options["data"]);
+//	$this->foreachPage($options["data"]);
 
-	$this->tpl->draw("header");
+
+		// se o parametro header for ativo
+		//chama ele ou seja se for chamada a rota da tela de login
+
+	if ($this->options['header'] === true) $this->tpl->draw("header");
+
 
 
 
@@ -67,7 +78,9 @@ class Page{
 
 	public function __destruct(){
 
-		$this->tpl->draw("footer");
+		// se o parametro footer for ativo
+		//chama ele ou seja se for chamada a rota da tela de login
+		if ($this->options['footer'] === true) $this->tpl->draw("footer");
 
 	}
 

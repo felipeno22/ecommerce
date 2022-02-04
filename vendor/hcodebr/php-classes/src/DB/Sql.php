@@ -9,10 +9,10 @@ class Sql {
 	//const PASSWORD = "root";
 	//const DBNAME = "db_ecommerce";
 
-	const HOSTNAME = "192.168.0.23";
+	const HOSTNAME = "127.0.0.1";
 	const USERNAME = "root";
 	const PASSWORD = "";
-	const DBNAME = "beirario";
+	const DBNAME = "db_ecommerce";
 
 	private $conn;
 
