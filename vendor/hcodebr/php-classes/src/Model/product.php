@@ -243,9 +243,9 @@ public function checkPhoto(){
 //função para verificar se existe foto 
 
 	//verifica se existe foto nesse caminho no caso a foto com nome do id  do produto
-	if(file_exists($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'res'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.$this->getIdproduct()."jpg")){
+	if(file_exists($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'res'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.$this->getIdproduct().".jpg")){
 
-		 $caminho="/res/admin/img/".$this->getIdproduct()."jpg";
+		 $caminho="/res/admin/img/".$this->getIdproduct().".jpg";
 
 	}else{
 
@@ -304,6 +304,31 @@ public function changePhoto($file){
 	imagedestroy($image);
 
 	$this->checkPhoto();
+}
+
+public static function checkList($list){
+	$array=[];
+
+//o '&''  server para manipular a mesma váriavel na memoria
+
+	foreach ($list as $row) {
+		
+		
+		$p= new Product();
+		$p->setIdproduct($row["idproduct"]);
+		$p->setDesproduct($row["desproduct"]);
+		$p->setVlprice($row["vlprice"]);
+		$p->setVlwidth($row["vlwidth"]);
+		$p->setVlheight($row["vlheight"]);
+		$p->setVllengh($row["vllength"]);
+		$p->setVlweight($row["vlweight"]);
+		$p->setDesurl($row["desurl"]);
+		$p->checkPhoto();
+		//$p->setDesphoto($p->getDesphoto());
+		$array[]=$p;
+	}
+	
+	return $array;
 }
 
 
