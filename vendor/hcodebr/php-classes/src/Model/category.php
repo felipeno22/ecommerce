@@ -69,6 +69,7 @@ class Category{
 			:pdescategory)",array(":pidcategory"=>$this->getIdcategory(),
 			":pdescategory"=>$this->getDescategory()));
 
+			Category::updateFile();
 
 		}
 
@@ -91,7 +92,7 @@ public  function update($dados,$idcategory){
 			:pdescategory)",array(":pidcategory"=>$this->getIdcategory(),
 			":pdescategory"=>$this->getDescategory()));
 	
-	
+	Category::updateFile();
 
 	}
 
@@ -126,7 +127,24 @@ public  function delete($idcategory){
 
 	$result=$sql->select("delete from tb_categories where idcategory= :idcategory",array(":idcategory"=>$idcategory));
 	
-	
+	Category::updateFile();
+
+	}
+
+
+	public static function updateFile(){
+
+		$category=Category::listAll();
+
+		$html=[];
+
+		foreach ($category as $cat) {
+			array_push($html,'<li><a href="/categories/'.$cat["idcategory"].' ">'.$cat['descategory'].'</a></li>' );
+		}
+
+		file_put_contents($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'categories-menu.html', implode('',$html));
+
+
 
 	}
 
