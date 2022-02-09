@@ -2,6 +2,7 @@
 
 use \Hcode\Page;
 use \Hcode\Model\Product;
+use \Hcode\Model\Category;
 
 
 /*
@@ -46,4 +47,52 @@ $app->get('/', function() {
 	
 
 });
+
+
+
+//rota tela  de lista de categorias
+$app->get('/categories/:idcategory',function ($idcategory){
+
+	$categories=new Category();
+
+	$categories->get((int)$idcategory);
+	
+	
+	$page=new Page();
+
+	$arr=Product::checkList($categories->getProducts());
+
+	$a=[];
+
+	foreach ($arr as $key) {
+		$b=[];
+		$b['idproduct']=$key->getIdproduct();
+		$b['desproduct']=$key->getDesproduct();
+		$b['vlprice']=$key->getVlprice();
+		$b['vlwidth']=$key->getVlwidth();
+		$b['vlheight']=$key->getVlheight();
+		$b['vllength']=$key->getVllength();
+		$b['vlweight']=$key->getVlweight();
+		$b['desurl']=$key->getDesurl();
+		$b['desphoto']=$key->getDesphoto();
+
+		$a[]=$b;
+	}
+	
+
+	
+
+ 	$page->setTlp("category",array("idcategory"=>$categories->getIdcategory(),"descategory"=>$categories->getDescategory(),"products"=>$a));
+
+});
+
+
+
+
+
+
+
+
+
+
 ?>
