@@ -175,6 +175,39 @@ public  function delete($idcategory){
 		return $result;
 	}
 
+
+	public function getProductsPage($page=1, $itemsToPage=3){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows * from tb_products p
+									inner join tb_productscategories pc on pc.idproduct=p.idproduct
+									inner join tb_categories c on pc.idcategory=c.idcategory
+									where c.idcategory= :idcategory limit ".$start.",".$itemsToPage."  ",[":idcategory"=>$this->getIdcategory()]);
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
+
+
+//ceil() arredonda o valor para cima ,
+// aqui nesse caso se nao dar para distribuir certinho
+//o num de produtos desejado pelo num de paginas desejada
+//ele cria mais uma pagina para colocar o restante			
+			return ["data"=>Product::checkList($result),
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
+
+	}
+
+
+
+
 	public function addProduct(Product $product){
 
 			$sql=new Sql();

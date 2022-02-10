@@ -53,15 +53,36 @@ $app->get('/', function() {
 //rota tela  de lista de categorias
 $app->get('/categories/:idcategory',function ($idcategory){
 
+	//se nao houver um numero de pagina definido sera por padrão 1
+	$p=(isset($_GET['page'])) ? (int)$_GET["page"] : 1;
+
+
 	$categories=new Category();
 
 	$categories->get((int)$idcategory);
 	
-	
+	$pages=[];
+
+	//passando o num de paginas  para fazer a paginaçao
+//o num de item por pagina nao esta sendo passado por param
+//entao por padrão e  3 	
+	$pagination=$categories->getProductsPage($p);
+
+
+
+	for ($i=1; $i<= $pagination['totalPages'];$i++) {
+
+		array_push($pages,["link"=>"/categories/".$categories->getIdcategory()."?page=".$i,
+							"page"=>$i]);
+	}
+
 	$page=new Page();
 
-	$arr=Product::checkList($categories->getProducts());
 
+
+	//$arr=Product::checkList($categories->getProducts());
+	$arr=$pagination['data'];
+	
 	$a=[];
 
 	foreach ($arr as $key) {
@@ -82,7 +103,7 @@ $app->get('/categories/:idcategory',function ($idcategory){
 
 	
 
- 	$page->setTlp("category",array("idcategory"=>$categories->getIdcategory(),"descategory"=>$categories->getDescategory(),"products"=>$a));
+ 	$page->setTlp("category",array("idcategory"=>$categories->getIdcategory(),"descategory"=>$categories->getDescategory(),"products"=>$a,"pages"=>$pages));
 
 });
 
