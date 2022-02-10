@@ -109,7 +109,30 @@ $app->get('/categories/:idcategory',function ($idcategory){
 
 
 
+$app->get('/products/:desurl',function ($desurl){
 
+
+		$products=new  Product();
+
+		$products->getFromURL($desurl);
+
+		$page=new Page();
+
+		$page->setTlp("product-detail",array("idproduct"=>$products->getIdproduct(),
+ 									"desproduct"=>$products->getDesproduct(),
+ 									"vlprice"=>$products->getVlprice(),
+ 									"vlwidth"=>$products->getVlwidth(),
+ 									"vlheight"=>$products->getVlheight(),
+ 									"vllength"=>$products->getVllength(),
+ 									"vlweight"=>$products->getVlweight(),
+ 									"desurl"=>$products->getDesurl(),
+ 									"desphoto"=>$products->getDesphoto(),
+ 									"categories"=>$products->getCategories()));
+
+
+
+
+});
 
 
 

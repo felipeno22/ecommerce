@@ -332,6 +332,33 @@ public static function checkList($list){
 }
 
 
+public function getFromURL($desurl){
+
+	$sql=new Sql();
+
+	$result=$sql->select("select * from tb_products where desurl= :desurl  limit 1",array(":desurl"=>$desurl));
+
+  	$this->setIdproduct($result[0]["idproduct"]);
+	$this->setDesproduct($result[0]["desproduct"]);
+	$this->setVlprice($result[0]["vlprice"]);
+	$this->setVlwidth($result[0]["vlwidth"]);
+	$this->setVlheight($result[0]["vlheight"]);
+	$this->setVllengh($result[0]["vllength"]);
+	$this->setVlweight($result[0]["vlweight"]);
+	$this->setDesurl($result[0]["desurl"]);
+	$this->checkPhoto();
+}
+
+
+
+public function getCategories(){
+
+	$sql=new Sql();
+
+	
+	return $sql->select("select * from tb_categories c inner join tb_productscategories pc on pc.idcategory=c.idcategory where pc.idproduct= :idproduct  ",array(":idproduct"=>$this->getIdproduct()));
+}
+
 }
 
 
