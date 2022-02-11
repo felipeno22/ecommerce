@@ -21,6 +21,7 @@ require_once("user.php");
 require_once("category.php");
 require_once("product.php");
 
+
 $app->run();//dps dde carregado os arquivos ele roda
 
  ?>

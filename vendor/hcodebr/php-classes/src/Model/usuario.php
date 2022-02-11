@@ -113,6 +113,62 @@ public function getInadmin(){
 
 
 
+public static function getFromSession()
+	{
+
+		$usuario = new Usuario();
+
+		if (isset($_SESSION[Usuario::SESSION]) && (int)$_SESSION[Usuario::SESSION]['iduser'] > 0) {
+
+			
+			//se tiver idcusuario passa ele para bscar no banco pelo metodo get()
+			$usuario->get((int)$_SESSION[Usuario::SESSION]['iduser']);
+
+		}
+
+		return $usuario;
+
+	}
+
+	public static function checkLogin($inadmin = true)
+	{
+
+		if (
+			!isset($_SESSION[Usuario::SESSION])
+			||
+			!$_SESSION[Usuario::SESSION]
+			||
+			!(int)$_SESSION[Usuario::SESSION]["iduser"] > 0
+		) {
+			
+			//Não está logado
+			return false;
+
+		} else {
+			
+		
+			//se estiver logado e a rota for da adminitração
+			if ($inadmin === true && (bool)$_SESSION[Usuario::SESSION]['inadmin'] === true) {
+
+				return true;
+
+				//se estiver  logado e a rota nao  for da adminitração
+			} else if ($inadmin === false) {
+
+				return true;
+
+				//se estiver  deslogado e  rota for da administração
+			} else {
+
+				return false;
+
+			}
+
+		}
+
+	}
+
+
 	public  static function login($login,$password){
 
 			$sql=new Sql();
@@ -206,20 +262,19 @@ public function getInadmin(){
 		public static function verifyLogin($inadmin = true)
 	{
 
-		if (
-			!isset($_SESSION[Usuario::SESSION])
-			|| 
-			!$_SESSION[Usuario::SESSION]
-			||
-			!(int)$_SESSION[Usuario::SESSION]["iduser"] > 0
-			||
-			(bool)$_SESSION[Usuario::SESSION]["iduser"] !== $inadmin
-		) {
-			
-			header("Location: /admin/login");
+
+
+		if (!Usuario::checkLogin($inadmin)) {
+
+			if ($inadmin) {
+				header("Location: /admin/login");
+			} else {
+				header("Location: /login");
+			}
 			exit;
 
 		}
+
 
 	}
 
