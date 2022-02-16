@@ -143,14 +143,101 @@ $app->get("/cart", function (){
 
 	$page =new Page();
 
+	
+	
+	$cart->getCalculateTotal();
 
-	$page->setTlp("cart");
+
+	$page->setTlp("cart",["idcart"=>$cart->getIdcart(),
+			"iduser"=>$cart->getIduser(),
+			"dessessionid"=>$cart->getDessessionid(),
+			"deszipcode"=>$cart->getDeszipcode(),
+			"vlfreight"=>$cart->getVlfreight(),
+			"nrdays"=>$cart->getNrdays(),
+			"vlsubtotal"=>$cart->getVlsubtotal(),
+			"vltotal"=>$cart->getVltotal(),
+			"products"=>$cart->getProducts(),'error'=>Cart::getMsgError()]);
 
 });
 
 
+$app->get("/cart/:idproduct/add", function ($idproduct){
 
 
+	$products=new Product();
+
+	$products->get((int)$idproduct);
+
+
+
+	$cart=Cart::getFromSession();
+
+	$quantity=(isset($_GET['quantity']))? (int)$_GET['quantity']:1;
+
+	for ($i=0; $i < $quantity ; $i++) { 
+				$cart->addProducts($products);
+
+			}
+
+	
+
+
+	header("Location: /cart");
+	exit;
+});
+
+
+$app->get("/cart/:idproduct/minus", function ($idproduct){
+
+
+	$products=new Product();
+
+	$products->get((int)$idproduct);
+
+
+
+	$cart=Cart::getFromSession();
+
+	$cart->removeProducts($products);
+
+
+	header("Location: /cart");
+	exit;
+});
+
+
+$app->get("/cart/:idproduct/remove", function ($idproduct){
+
+
+	$products=new Product();
+
+	$products->get((int)$idproduct);
+
+
+
+	$cart=Cart::getFromSession();
+
+	$cart->removeProducts($products,true);
+
+
+	header("Location: /cart");
+	exit;
+});
+
+
+$app->post("/cart/freight", function (){
+
+
+		$cart= Cart::getFromSession();
+
+
+
+		$cart->setFreight($_POST['zipcode']);
+
+		header("Location: /cart");
+		exit;
+
+});
 
 
 ?>

@@ -269,7 +269,7 @@ public static function getFromSession()
 			if ($inadmin) {
 				header("Location: /admin/login");
 			} else {
-				header("Location: /login");
+				header("Location: /");
 			}
 			exit;
 
