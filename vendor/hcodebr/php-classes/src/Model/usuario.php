@@ -7,6 +7,7 @@ use \Hcode\Mailer;
 class Usuario{
 
 	const SESSION="Usuario";
+		const SESSION_ERROR_USER = "UserError";
 
 	//CHAVE´PARA CRIPTOGRAFAR E DESCRIPTOGRAFAR obs: deve ter no minimo 16 caracteres é uma regra
 	//NUNCA SUBA ESSA CHAVE NO GITHUB NO REPOSITORIO PUBLICO SE NAO PODEM USAR ELA PARA DESCRIPTOGRAFAR
@@ -145,7 +146,6 @@ public static function getFromSession()
 			return false;
 
 		} else {
-			
 		
 			//se estiver logado e a rota for da adminitração
 			if ($inadmin === true && (bool)$_SESSION[Usuario::SESSION]['inadmin'] === true) {
@@ -205,6 +205,7 @@ public static function getFromSession()
 
 					$user->setIdUser($data['iduser']);
 					$user->setIdperson($data['idperson']);
+					$user->setDesperson(utf8_encode($data['desperson']));
 					$user->setDeslogin($data['deslogin']);
 					$user->setDespassword($data['despassword']);
 					$user->setInadmin($data['inadmin']);
@@ -261,15 +262,14 @@ public static function getFromSession()
 
 		public static function verifyLogin($inadmin = true)
 	{
-
-
+		
 
 		if (!Usuario::checkLogin($inadmin)) {
 
 			if ($inadmin) {
 				header("Location: /admin/login");
 			} else {
-				header("Location: /");
+				header("Location: /login");
 			}
 			exit;
 
@@ -344,7 +344,7 @@ public  function save($dados){
 		:despassword, 
 		:desemail, 
 		:nrphone, 
-		:inadmin)",array(":desperson"=>$this->getDesperson(),
+		:inadmin)",array(":desperson"=>utf8_decode($this->getdesperson()),
 			":deslogin"=>$this->getDeslogin(),
 			":despassword"=>$this->getDespassword(),
 			":desemail"=>$this->getDesemail(),
@@ -370,7 +370,7 @@ on p.idperson=u.idperson  where u.iduser= :iduser',array("iduser"=>$iduser));
 	
 	$this->setIduser($result[0]["iduser"]);
 	$this->setIdperson($result[0]["idperson"]);
-	$this->setDesperson($result[0]["desperson"]);
+	$this->setDesperson(utf8_encode($result[0]["desperson"]));
 	$this->setDespassword($result[0]["despassword"]);
 	$this->setDeslogin($result[0]["deslogin"]);
 	$this->setNrphone($result[0]["nrphone"]);
@@ -442,7 +442,7 @@ public  function update($dados,$iduser){
 		:desemail, 
 		:nrphone, 
 		:inadmin)",array(":iduser"=>$this->getIduser(),
-			":desperson"=>$this->getDesperson(),
+			":desperson"=>utf8_decode($this->getdesperson()),
 			":deslogin"=>$this->getDeslogin(),
 			":despassword"=>$this->getDespassword(),
 			":desemail"=>$this->getDesemail(),
@@ -618,6 +618,44 @@ public  function setPassword($password)
 		));
 
 	}
+
+
+
+
+public static function setMsgError($msg)
+	{
+
+		$_SESSION[Usuario::SESSION_ERROR_USER] = $msg;
+
+	}
+
+	public static function getMsgError()
+	{
+
+		$msg = (isset($_SESSION[Usuario::SESSION_ERROR_USER])) ? $_SESSION[Usuario::SESSION_ERROR_USER] : "";
+
+		Usuario::clearMsgError();
+
+		return $msg;
+
+	}
+
+	public static function clearMsgError()
+	{
+
+		$_SESSION[Usuario::SESSION_ERROR_USER] = NULL;
+
+	}
+
+
+	public static function getPasswordHash($password)
+	{
+
+		return password_hash($password, PASSWORD_DEFAULT, [
+			'cost'=>12
+		]);
+
+	}	
 
 
 }

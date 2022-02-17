@@ -238,12 +238,13 @@ class Cart{
 
 			}
 
-			
+			if(isset($data['iduser'])){
 				$cart->setIduser($data['iduser']);
-			$cart->setDessessionid($data['dessessionid']);
-			$cart->save();
-
-
+				
+			}
+			
+				$cart->setDessessionid($data['dessessionid']);
+				$cart->save();
 				$cart->setToSession();	
 			
 
