@@ -469,13 +469,15 @@ public  function delete($iduser){
 	}
 
 
-  public static function getForgot($email){
+  public static function getForgot($email, $inadmin = true){
+
+  	
 
   		$sql=new Sql();
 
 
   		//verica se email esta cadastrado
-	$results=$sql->select("select * from tb_persons p inner join tb_users using(idperson) where p.desemail=:email",array(":email"=>$email));
+	$results=$sql->select("select * from tb_persons p inner join tb_users using(idperson) where p.desemail= :email",array(":email"=>$email));
 
 
 //se nao tiver resultado
@@ -484,7 +486,7 @@ public  function delete($iduser){
 			throw new \Exception ("Não foi possivel recuperar a senha!"); 
 
 	}else{//se tiver
-
+			
 
 			$data=$results[0];//obtem dados da consulta anteriro
 
@@ -504,13 +506,14 @@ public  function delete($iduser){
 			throw new \Exception ("Não foi possivel recuperar a senha!"); 
 
 			}else{
-
+						
 				$data2=$results2[0];
 
-
+					
 				//base64_encode() transforma  codigos em texto/caracteres legiveis
 				$code = base64_encode($data2['idrecovery']);
 
+				
 				//gerando um código criptografado do id_recovery da tabela de recuperação de senha 
 			
 				/*mcrypt_encrypt() é uma função q faz a criptografia obs: essa função é obssoleta apartir php 7.1
@@ -524,8 +527,20 @@ public  function delete($iduser){
 
 				//link para enviar por email usando php mailer para que usuario acesse 
 				//nosso sistema para digitar a nova senha
-				$link="http://www.ecommercefelipe.com.br/admin/forgot/reset?code= $code";
+				if ($inadmin === true) {
+					
+					$link="http://www.ecommercefelipe.com.br/admin/forgot/reset?code=$code";
 
+				} else {
+
+					$link="http://www.ecommercefelipe.com.br/forgot/reset?code=$code";
+
+
+				}
+
+
+
+				
 				//chamando a classe criada phpMailer para fazer o envio  do email usando PHPMAILER
 				$mailer= new Mailer($data['desemail'],$data['desperson'],"Redefinir senha da Hcode Store","forgot",array("name"=>$data['desperson'],"link"=>$link));
 
@@ -549,36 +564,40 @@ public  function delete($iduser){
 public static function validForgotDecrypt($code)
 	{
 
-	
 		//converte de texto para codigo
 		$code = base64_decode($code);
+
+
+		
 
 		$idrecovery = openssl_decrypt($code, 'AES-128-CBC', pack("a16", Usuario::KEY_SECRET), 0, pack("a16", Usuario::KEY_SECRET_II));
 
 
 
-
 		$sql = new Sql();
-
+		
 
 //sql q faz a validação verificando se existe registro , se nao ja nao foi validado e
 //  e se  esta dentro de uma hora do momento q foi cadastro o registro de recuperação de senha	
 		$results = $sql->select("
 			SELECT *
 			FROM tb_userspasswordsrecoveries a
-			INNER JOIN tb_users b USING(iduser)
-			INNER JOIN tb_persons c USING(idperson)
+			INNER JOIN tb_users b on a.iduser=b.iduser
+			INNER JOIN tb_persons c on c.idperson=b.idperson
 			WHERE
 				a.idrecovery = :idrecovery
 				AND
 				a.dtrecovery IS NULL
 				AND
-				DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
-		", array(
-			":idrecovery"=>$idrecovery
-		));
+				DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW()
+		",[":idrecovery"=>$code]);
 
-		if (count($results) === 0)
+		
+
+		
+
+
+		if (count($results[0]) === 0)
 		{
 			throw new \Exception("Não foi possível recuperar a senha.");
 		}

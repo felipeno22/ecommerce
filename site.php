@@ -391,4 +391,85 @@ $app->post("/register", function(){
 
 
 
+
+
+//rota tela de esqueceu senha (onde digita o email)
+$app->get('/forgot',function (){
+
+
+	//passando parametros para desativar footer e header 
+	$page=new Page();
+
+ 	$page->setTlp("forgot");
+
+});
+
+
+//rota  para verificar se o existe usuario com o email digitado
+$app->post('/forgot',function (){
+
+
+	//enviando o email digitado para verificar se existe usuario com ele
+ 	$user= Usuario::getForgot($_POST["email"],false);
+
+ 		header("Location: /forgot/sent");
+ 		exit;
+
+});
+
+
+//rota para chamar a tela de  menssagem que o email foi enviado
+$app->get('/forgot/sent',function (){
+
+
+	$page=new Page();
+
+ 	$page->setTlp("forgot-sent");
+});
+
+
+//rota para chamar tela de digitar nova senha
+//nessa tela ja ocorre a validação  da recupeção de senha
+$app->get('/forgot/reset',function (){
+
+	//pegando o codigo para validar
+	$user= Usuario::validForgotDecrypt($_GET['code']);
+
+	$page=new Page();
+
+ 	$page->setTlp("forgot-reset",array("name"=>$user['desperson'],"code"=>$_GET['code']));
+});
+
+
+//rota aonde  faz a validação de senha novamente
+$app->post('/forgot/reset',function (){
+
+
+	//pegando o codigo para validar novamente
+	$forgot= Usuario::validForgotDecrypt($_POST['code']);
+
+//setando data de   recuperação de senha
+	Usuario::setFogotUsed($forgot['idrecovery']);
+
+	$user = new Usuario();
+
+	//pegando dados do usario
+	$user->get((int)$forgot['iduser']);//convertendo o id passado para int 
+
+//password transforma senha de caracteres em hash para salvar no banco
+	//o terceiro param é um array aonde vc define o numero de processamente
+	//coloque sempre 12 para haver equilibrio
+	//$password=password_hash($_POST['password'], PASSWORD_DEFAULT,['cost'=>12]);
+	$password=md5($_POST['password']);
+	//alterando a senha do usuario
+	$user->setPassword($password);	
+
+	$page=new Page();
+
+ 	$page->setTlp("forgot-reset-success");
+});
+
+
+
+
 ?>
