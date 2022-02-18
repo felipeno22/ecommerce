@@ -7,7 +7,8 @@ use \Hcode\Mailer;
 class Usuario{
 
 	const SESSION="Usuario";
-		const SESSION_ERROR_USER = "UserError";
+	const SESSION_ERROR_USER = "UserError";
+	const ERROR_REGISTER = "UserErrorRegister";
 
 	//CHAVE´PARA CRIPTOGRAFAR E DESCRIPTOGRAFAR obs: deve ter no minimo 16 caracteres é uma regra
 	//NUNCA SUBA ESSA CHAVE NO GITHUB NO REPOSITORIO PUBLICO SE NAO PODEM USAR ELA PARA DESCRIPTOGRAFAR
@@ -174,7 +175,7 @@ public static function getFromSession()
 			$sql=new Sql();
 
 
-			$result=$sql->select("select * from tb_users where deslogin= :LOGIN",array(":LOGIN"=>$login));
+			$result=$sql->select("select * from tb_users u inner join tb_persons p on u.idperson=p.idperson  where u.deslogin= :LOGIN",array(":LOGIN"=>$login));
 
 			if(count($result)===0){
 				//criando uma exception 
@@ -648,6 +649,33 @@ public static function setMsgError($msg)
 	}
 
 
+	public static function setErrorRegister($msg)
+	{
+
+		$_SESSION[Usuario::ERROR_REGISTER] = $msg;
+
+	}
+
+	public static function getErrorRegister()
+	{
+
+		$msg = (isset($_SESSION[Usuario::ERROR_REGISTER]) && $_SESSION[Usuario::ERROR_REGISTER]) ? $_SESSION[Usuario::ERROR_REGISTER] : '';
+
+		Usuario::clearErrorRegister();
+
+		return $msg;
+
+	}
+
+	public static function clearErrorRegister()
+	{
+
+		$_SESSION[Usuario::ERROR_REGISTER] = NULL;
+
+	}
+
+
+
 	public static function getPasswordHash($password)
 	{
 
@@ -655,7 +683,24 @@ public static function setMsgError($msg)
 			'cost'=>12
 		]);
 
-	}	
+	}
+
+
+
+
+	public static function checkLoginExist($login)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+			':deslogin'=>$login
+		]);
+
+		return (count($results) > 0);
+
+	}
+	
 
 
 }
