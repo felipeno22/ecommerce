@@ -9,6 +9,7 @@ class Usuario{
 	const SESSION="Usuario";
 	const SESSION_ERROR_USER = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
+	const SUCCESS = "UserSucesss";
 
 	//CHAVE´PARA CRIPTOGRAFAR E DESCRIPTOGRAFAR obs: deve ter no minimo 16 caracteres é uma regra
 	//NUNCA SUBA ESSA CHAVE NO GITHUB NO REPOSITORIO PUBLICO SE NAO PODEM USAR ELA PARA DESCRIPTOGRAFAR
@@ -690,6 +691,33 @@ public static function setMsgError($msg)
 	{
 
 		$_SESSION[Usuario::ERROR_REGISTER] = NULL;
+
+	}
+
+
+
+	public static function setSuccess($msg)
+	{
+
+		$_SESSION[Usuario::SUCCESS] = $msg;
+
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = (isset($_SESSION[Usuario::SUCCESS]) && $_SESSION[Usuario::SUCCESS]) ? $_SESSION[Usuario::SUCCESS] : '';
+
+		Usuario::clearSuccess();
+
+		return $msg;
+
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[Usuario::SUCCESS] = NULL;
 
 	}
 

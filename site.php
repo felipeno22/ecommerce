@@ -290,6 +290,7 @@ $app->post("/login", function (){
 		try{
 
 			Usuario::login($_POST['login'],$_POST['password']);
+			Usuario::setMsgError('');
 
 		}catch(Exception $e){
 
@@ -468,6 +469,84 @@ $app->post('/forgot/reset',function (){
 
  	$page->setTlp("forgot-reset-success");
 });
+
+
+
+$app->get('/profile',function (){
+
+
+
+	Usuario::verifyLogin(false);
+	$user= Usuario::getFromSession();
+
+
+
+	$page=new Page();
+
+ 	$page->setTlp("profile",array("iduser"=>$user->getIduser(),
+ 										"desperson"=>$user->getDesperson(),
+ 										"deslogin"=>$user->getDeslogin(),
+ 										"despassword"=>$user->getDespassword(),
+ 										"desemail"=>$user->getDesemail(),
+ 										"nrphone"=>$user->getNrphone(),
+ 										"inadmin"=>$user->getInadmin(),
+ 										"profileMsg"=>Usuario::getSuccess(),"profileError"=>Usuario::getMsgError()));
+
+});
+
+
+
+$app->post('/profile',function (){
+
+
+
+	Usuario::verifyLogin(false);
+	
+	if(!isset($_POST['desperson']) || $_POST['desperson']==='' ){
+		Usuario::setMsgError("Preencha o seu nome");
+		header("Location: /profile");
+ 		exit();
+
+	}
+
+	if(!isset($_POST['desemail']) || $_POST['desemail']==='' ){
+		Usuario::setMsgError("Preencha o seu e-mail");
+		header("Location: /profile");
+ 		exit();
+
+	}
+
+
+	$user= Usuario::getFromSession();
+
+	if($_POST['desemail'] !== $user->getDesemail()){
+
+			if(Usuario::checkLoginExist($_POST['desemail'])){
+
+					Usuario::setMsgError("Este endereço de e-mail ja está cadastrado.");
+					header("Location: /profile");
+ 					exit();
+
+
+			}
+
+	}
+
+	$_POST['inadmin']=$user->getInadmin();
+	$_POST['password']=$user->getDespassword();
+	$_POST['deslogin']= $_POST['desemail'];
+
+
+
+	$user->update($_POST,$user->getIduser());
+
+	 Usuario::setSuccess("Dados alterados com sucesso!");
+	
+ 	header("Location: /profile");
+ 	exit();
+});
+
+
 
 
 
