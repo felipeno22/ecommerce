@@ -3,14 +3,14 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    Produtos da Categoria <?php echo htmlspecialchars( $descategory, ENT_COMPAT, 'UTF-8', FALSE ); ?>
+    Produtos da Categoria <?php echo htmlspecialchars( $category["descategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?>
 
   </h1>
   <ol class="breadcrumb">
     <li><a href="/admin"><i class="fa fa-dashboard"></i> Home</a></li>
     <li><a href="/admin/categories">Categorias</a></li>
-    <li><a href="/admin/categories/<?php echo htmlspecialchars( $idcategory, ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $descategory, ENT_COMPAT, 'UTF-8', FALSE ); ?></a></li>
-    <li class="active"><a href="/admin/categories/<?php echo htmlspecialchars( $idcategory, ENT_COMPAT, 'UTF-8', FALSE ); ?>/products">Produtos</a></li>
+    <li><a href="/admin/categories/<?php echo htmlspecialchars( $category["idcategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $category["descategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a></li>
+    <li class="active"><a href="/admin/categories/<?php echo htmlspecialchars( $category["idcategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/products">Produtos</a></li>
   </ol>
 </section>
 
@@ -41,7 +41,7 @@
                             <td><?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
                             <td><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
                             <td>
-                                <a href="/admin/categories/<?php echo htmlspecialchars( $idcategory, ENT_COMPAT, 'UTF-8', FALSE ); ?>/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/add" class="btn btn-primary btn-xs pull-right"><i class="fa fa-arrow-right"></i> Adicionar</a>
+                                <a href="/admin/categories/<?php echo htmlspecialchars( $category["idcategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/add" class="btn btn-primary btn-xs pull-right"><i class="fa fa-arrow-right"></i> Adicionar</a>
                             </td>
                             </tr>
                             <?php } ?>
@@ -54,7 +54,7 @@
         <div class="col-md-6">
             <div class="box box-success">
                 <div class="box-header with-border">
-                <h3 class="box-title">Produtos na Categoria <?php echo htmlspecialchars( $descategory, ENT_COMPAT, 'UTF-8', FALSE ); ?></h3>
+                <h3 class="box-title">Produtos na Categoria <?php echo htmlspecialchars( $category["descategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?></h3>
                 </div>
                 <!-- /.box-header -->
                 <!-- form start -->
@@ -74,7 +74,7 @@
                             <td><?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
                             <td><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
                             <td>
-                                <a href="/admin/categories/<?php echo htmlspecialchars( $idcategory, ENT_COMPAT, 'UTF-8', FALSE ); ?>/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove" class="btn btn-primary btn-xs pull-right"><i class="fa fa-arrow-left"></i> Remover</a>
+                                <a href="/admin/categories/<?php echo htmlspecialchars( $category["idcategory"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove" class="btn btn-primary btn-xs pull-right"><i class="fa fa-arrow-left"></i> Remover</a>
                             </td>
                             </tr>
                             <?php } ?>

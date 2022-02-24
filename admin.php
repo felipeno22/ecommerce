@@ -2,12 +2,12 @@
 
 
 use \Hcode\PageAdmin;
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
 
 $app->get('/admin', function() {
     
     //verificando sessao do login
-    Usuario:: verifyLogin();
+    User::verifyLogin();
 
 
 	//echo "OK";
@@ -43,12 +43,12 @@ $app->get('/admin/login', function() {
 
 //criando rota para a tela de  login
 $app->post('/admin/login', function() {
-    
+  
 
     // chamando o métod de logar da classe User
-	Usuario::login($_POST['login'],$_POST['password']);
+	User::login($_POST['login'],$_POST['password']);
 
-
+	
 
 	//chamando a tela de adminstração após logar
 	header("Location: /admin");
@@ -62,7 +62,7 @@ $app->post('/admin/login', function() {
 $app->get('/admin/logout', function() {
     
 
-   Usuario::logout();
+   User::logout();
 
 
 	//chamando a tela de adminstração após logar
@@ -94,7 +94,7 @@ $app->post('/admin/forgot',function (){
 
 
 	//enviando o email digitado para verificar se existe usuario com ele
- 	$user= Usuario::getForgot($_POST["email"]);
+ 	$user= User::getForgot($_POST["email"]);
 
  		header("Location: /admin/forgot/sent");
  		exit;
@@ -117,7 +117,7 @@ $app->get('/admin/forgot/sent',function (){
 $app->get('/admin/forgot/reset',function (){
 
 	//pegando o codigo para validar
-	$user= Usuario::validForgotDecrypt($_GET['code']);
+	$user= User::validForgotDecrypt($_GET['code']);
 
 	$admin=new PageAdmin(["header"=>false,"footer"=>false]);
 
@@ -129,12 +129,12 @@ $app->get('/admin/forgot/reset',function (){
 $app->post('/admin/forgot/reset',function (){
 
 	//pegando o codigo para validar novamente
-	$forgot= Usuario::validForgotDecrypt($_POST['code']);
+	$forgot= User::validForgotDecrypt($_POST['code']);
 
 //setando data de   recuperação de senha
-	Usuario::setFogotUsed($forgot['idrecovery']);
+	User::setFogotUsed($forgot['idrecovery']);
 
-	$user = new Usuario();
+	$user = new User();
 
 	//pegando dados do usario
 	$user->get((int)$forgot['iduser']);//convertendo o id passado para int 
@@ -163,7 +163,7 @@ $app->post('/admin/forgot/reset',function (){
 /*
 $app->delete("/admin/users/:iduser", function ($iduser) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 

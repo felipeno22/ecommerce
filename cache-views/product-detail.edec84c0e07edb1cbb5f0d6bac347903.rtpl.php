@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="product-bit-title text-center">
-                    <h2><?php echo htmlspecialchars( $desproduct, ENT_COMPAT, 'UTF-8', FALSE ); ?></h2>
+                    <h2><?php echo htmlspecialchars( $products["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></h2>
                 </div>
             </div>
         </div>
@@ -17,26 +17,26 @@
                 <div class="product-content-right">
                     <div class="product-breadcroumb">
                         <a href="/">Home</a>
-                        <a href=""><?php echo htmlspecialchars( $desproduct, ENT_COMPAT, 'UTF-8', FALSE ); ?></a>
+                        <a href=""><?php echo htmlspecialchars( $products["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a>
                     </div>
                     
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="product-images">
                                 <div class="product-main-img">
-                                    <img src="<?php echo htmlspecialchars( $desphoto, ENT_COMPAT, 'UTF-8', FALSE ); ?>">
+                                    <img src="<?php echo htmlspecialchars( $products["desphoto"], ENT_COMPAT, 'UTF-8', FALSE ); ?>">
                                 </div>
                             </div>
                         </div>
                         
                         <div class="col-sm-6">
                             <div class="product-inner">
-                                <h2 class="product-name"><?php echo htmlspecialchars( $desproduct, ENT_COMPAT, 'UTF-8', FALSE ); ?></h2>
+                                <h2 class="product-name"><?php echo htmlspecialchars( $products["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></h2>
                                 <div class="product-inner-price">
-                                    <ins>$<?php echo formatPrice($vlprice); ?></ins>
+                                    <ins>$<?php echo formatPrice($products["vlprice"]); ?></ins>
                                 </div>    
                                 
-                                <form action="/cart/<?php echo htmlspecialchars( $idproduct, ENT_COMPAT, 'UTF-8', FALSE ); ?>/add" class="cart">
+                                <form action="/cart/<?php echo htmlspecialchars( $products["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/add" class="cart">
                                     <div class="quantity">
                                         <input type="number" size="4" class="input-text qty text" title="Qty" value="1" name="quantity" min="1" step="1">
                                     </div>

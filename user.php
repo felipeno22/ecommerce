@@ -1,14 +1,14 @@
 <?php
 
 use \Hcode\PageAdmin;
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
 
 //chama tela de lista users
 $app->get("/admin/users", function () {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
- 	$users=Usuario::listAll();//chamando todos os usuario
+ 	$users=User::listAll();//chamando todos os usuario
 
 
  	$admin= new PageAdmin();
@@ -23,7 +23,7 @@ $app->get("/admin/users", function () {
 //chama tela de criar user
 $app->get("/admin/users/create", function () {
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
 
  	
  	$admin= new PageAdmin();
@@ -42,10 +42,10 @@ para ele excutar as rotas certinho, se nao pode achar  q as rotas sao iguais e
   //tela para deletar user
 $app->get("/admin/users/:iduser/delete", function ($iduser) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
-	$user = new Usuario();
+	$user = new User();
 
 	
 
@@ -65,71 +65,43 @@ $app->get("/admin/users/:iduser/delete", function ($iduser) {
 //chama tela de alterar user
 $app->get("/admin/users/:iduser", function ($iduser) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
-	$user = new Usuario();
+	$user = new User();
 
 	$user->get((int)$iduser);//convertendo o id passado para int 	
+
 
  //	var_dump($user);		
 	$admin=new PageAdmin();
 
- 	$admin->setTlp("users-update",array("iduser"=>$user->getIduser(),
- 										"desperson"=>$user->getDesperson(),
- 										"deslogin"=>$user->getDeslogin(),
- 										"despassword"=>$user->getDespassword(),
- 										"desemail"=>$user->getDesemail(),
- 										"nrphone"=>$user->getNrphone(),
- 										"inadmin"=>$user->getInadmin()
-
-
-
-
- ));
+ 	$admin->setTlp("users-update",array("user"=>$user->getValues()));
 
 
 });
-/**/
-
 
 
 
 //rota para cadastrar
 $app->post("/admin/users/create", function () {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
  		
- 	$user = new Usuario();
+ 	$user = new User();
 
  	$_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
 
- 	
+ 	//$_POST['despassword'] = md5($_POST['despassword']);
 
- 	$user->save($_POST);
+ 	$user->setData($_POST);
+
+ 	$user->save();
 
  	header("Location: /admin/users");
  	exit;
 
-
-
-	/*$user = new User();
-
- 	$_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
-
- 	$_POST['despassword'] = password_hash($_POST["despassword"], PASSWORD_DEFAULT, [
-
- 		"cost"=>12
-
- 	]);
-
- 	$user->setData($_POST);
-
-	$user->save();
-
-	header("Location: /admin/users");
- 	exit;*/
 
 
 });
@@ -140,16 +112,19 @@ $app->post("/admin/users/create", function () {
 $app->post("/admin/users/:iduser", function ($iduser) {
 
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
-	$user = new Usuario();
+	$user = new User();
 
 	$_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
 
 	$user->get((int)$iduser);//convertendo o id passado para int 	
 
+
+	$user->setData($_POST);
+
 	//var_dump($user);
-	$user->update($_POST,$iduser);
+	$user->update();
 
  	header("Location: /admin/users");
  	exit;

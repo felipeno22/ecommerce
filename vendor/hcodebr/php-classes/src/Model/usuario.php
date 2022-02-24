@@ -6,7 +6,7 @@ use \Hcode\Mailer;
 
 class Usuario{
 
-	const SESSION="Usuario";
+	const SESSION2="Usuario";
 	const SESSION_ERROR_USER = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
 	const SUCCESS = "UserSucesss";
@@ -121,11 +121,11 @@ public static function getFromSession()
 
 		$usuario = new Usuario();
 
-		if (isset($_SESSION[Usuario::SESSION]) && (int)$_SESSION[Usuario::SESSION]['iduser'] > 0) {
+		if (isset($_SESSION[Usuario::SESSION2]) && (int)$_SESSION[Usuario::SESSION2]['iduser'] > 0) {
 
 			
 			//se tiver idcusuario passa ele para bscar no banco pelo metodo get()
-			$usuario->get((int)$_SESSION[Usuario::SESSION]['iduser']);
+			$usuario->get((int)$_SESSION[Usuario::SESSION2]['iduser']);
 
 		}
 
@@ -137,11 +137,11 @@ public static function getFromSession()
 	{
 
 		if (
-			!isset($_SESSION[Usuario::SESSION])
+			!isset($_SESSION[Usuario::SESSION2])
 			||
-			!$_SESSION[Usuario::SESSION]
+			!$_SESSION[Usuario::SESSION2]
 			||
-			!(int)$_SESSION[Usuario::SESSION]["iduser"] > 0
+			!(int)$_SESSION[Usuario::SESSION2]["iduser"] > 0
 		) {
 			
 			//Não está logado
@@ -222,7 +222,7 @@ public static function getFromSession()
 
 					];
 
-					$_SESSION[Usuario::SESSION]=$array_user;
+					$_SESSION[Usuario::SESSION2]=$array_user;
 
 						/*echo $user->getIdUser();
 						echo "<br>";
@@ -285,7 +285,7 @@ public static function getFromSession()
 public static function logout()
 	{
 
-		$_SESSION[Usuario::SESSION] = NULL;
+		$_SESSION[Usuario::SESSION2] = NULL;
 
 	}
 
@@ -646,14 +646,14 @@ public  function setPassword($password)
 public static function setMsgError($msg)
 	{
 
-		$_SESSION[Usuario::SESSION_ERROR_USER] = $msg;
+		$_SESSION[Usuario::SESSION2_ERROR_USER] = $msg;
 
 	}
 
 	public static function getMsgError()
 	{
 
-		$msg = (isset($_SESSION[Usuario::SESSION_ERROR_USER])) ? $_SESSION[Usuario::SESSION_ERROR_USER] : "";
+		$msg = (isset($_SESSION[Usuario::SESSION2_ERROR_USER])) ? $_SESSION[Usuario::SESSION2_ERROR_USER] : "";
 
 		Usuario::clearMsgError();
 
@@ -664,7 +664,7 @@ public static function setMsgError($msg)
 	public static function clearMsgError()
 	{
 
-		$_SESSION[Usuario::SESSION_ERROR_USER] = NULL;
+		$_SESSION[Usuario::SESSION2_ERROR_USER] = NULL;
 
 	}
 

@@ -86,7 +86,7 @@
                                     
                                     <div class="coupon">
                                         <label for="cep">CEP:</label>
-                                        <input type="text" placeholder="00000-000" value="<?php echo htmlspecialchars( $deszipcode, ENT_COMPAT, 'UTF-8', FALSE ); ?>" id="cep" class="input-text" name="zipcode">
+                                        <input type="text" placeholder="00000-000" value="<?php echo htmlspecialchars( $cart["deszipcode"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" id="cep" class="input-text" name="zipcode">
                                         <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
                                     </div>
 
@@ -100,17 +100,17 @@
                                         <tbody>
                                             <tr class="cart-subtotal">
                                                 <th>Subtotal</th>
-                                                <td><span class="amount">R$<?php echo formatPrice($vlsubtotal); ?></span></td>
+                                                <td><span class="amount">R$<?php echo formatPrice($cart["vlsubtotal"]); ?></span></td>
                                             </tr>
 
                                             <tr class="shipping">
                                                 <th>Frete</th>
-                                                <td>R$<?php echo formatPrice($vlfreight); ?> <?php if( $nrdays > 0 ){ ?><small>prazo de <?php echo htmlspecialchars( $nrdays, ENT_COMPAT, 'UTF-8', FALSE ); ?> dia(s)</small><?php } ?></td>
+                                                <td>R$<?php echo formatPrice($cart["vlfreight"]); ?> <?php if( $cart["nrdays"] > 0 ){ ?><small>prazo de <?php echo htmlspecialchars( $cart["nrdays"], ENT_COMPAT, 'UTF-8', FALSE ); ?> dia(s)</small><?php } ?></td>
                                             </tr>
 
                                             <tr class="order-total">
                                                 <th>Total</th>
-                                                <td><strong><span class="amount">R$<?php echo formatPrice($vltotal); ?></span></strong> </td>
+                                                <td><strong><span class="amount">R$<?php echo formatPrice($cart["vltotal"]); ?></span></strong> </td>
                                             </tr>
                                         </tbody>
                                     </table>

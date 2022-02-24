@@ -1,114 +1,103 @@
 <?php 
 namespace Hcode\Model;
 use \Hcode\DB\Sql;
+use \Hcode\Model;
 
 
-class Address{
+class Address extends Model{
 
-	private $desaddress;
-	private $descomplement;
-	private $desdistrict;
-	private $descity;
-	private $desstate;
-	private $descountry;
+	const  SESSION_ERROR = "EndereçoErro" ;
 
+	public static function getCEP($nrcep)
+	{
 
+		$nrcep = str_replace("-", "", $nrcep);
 
+		$ch = curl_init();
 
-	public  function setDesaddress($desaddress){
+		curl_setopt($ch, CURLOPT_URL, "http://viacep.com.br/ws/$nrcep/json/");
 
-		$this->desaddress=$desaddress;
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
+		$data = json_decode(curl_exec($ch), true);
 
-	}
+		curl_close($ch);
 
-	public function  getDesaddress(){
-
-		return $this->desaddress;
-	
-
-	}
-
-
-	public function  setDescomplement($descomplement){
-
-		$this->descomplement=$descomplement;
-		$this->descomplement=$descomplement;
-
+		return $data;
 
 	}
 
-	public function  getDescomplement(){
+	public function loadFromCEP($nrcep)
+	{
 
-		return $this->descomplement;
-	
+		$data = Address::getCEP($nrcep);
 
-	}
+		if (isset($data['logradouro']) && $data['logradouro']) {
 
+			$this->setdesaddress($data['logradouro']);
+			$this->setdescomplement($data['complemento']);
+			$this->setdesdistrict($data['bairro']);
+			$this->setdescity($data['localidade']);
+			$this->setdesstate($data['uf']);
+			$this->setdescountry('Brasil');
+			$this->setdeszipcode($nrcep);
 
-	public function  setDesdistrict($desdistrict){
-
-		$this->address=$desdistrict;
-		$this->desdistrict=$desdistrict;
-
-
-	}
-
-	public function  getDesdistrict(){
-
-		return $this->desdistrict;
-	
+		}
 
 	}
 
 
-	public function  setDescity($descity){
-
-		$this->descity=$descity;
-		$this->descity=$descity;
 
 
-	}
+	public function save()
+	{
 
-	public function  getDescity(){
+		$sql = new Sql();
 
-		return $this->descity;
-	
+		$results = $sql->select("CALL sp_addresses_save(:idaddress, :idperson, :desaddress, :descomplement, :descity, :desstate, :descountry, :deszipcode, :desdistrict)", [
+			':idaddress'=>$this->getidaddress(),
+			':idperson'=>$this->getidperson(),
+			':desaddress'=>utf8_decode($this->getdesaddress()),
+			':descomplement'=>utf8_decode($this->getdescomplement()),
+			':descity'=>utf8_decode($this->getdescity()),
+			':desstate'=>utf8_decode($this->getdesstate()),
+			':descountry'=>utf8_decode($this->getdescountry()),
+			':deszipcode'=>$this->getdeszipcode(),
+			':desdistrict'=>$this->getdesdistrict()
+		]);
 
-	}
-
-
-	public function  setDesstate($desstate){
-
-		$this->desstate=$desstate;
-		$this->desstate=$desstate;
-
-
-	}
-
-	public function  getDesstate(){
-
-		return $this->desstate;
-	
+		if (count($results) > 0) {
+			$this->setData($results[0]);
+		}
 
 	}
 
+	public static function setMsgError($msg)
+	{
 
-	public function  setDescountry($descountry){
-
-		$this->descountry=$descountry;
-		$this->descountry=$descountry;
-
+		$_SESSION[Address::SESSION_ERROR] = $msg;
 
 	}
 
-	public function  getDescountry(){
+	public static function getMsgError()
+	{
 
-		return $this->descountry;
-	
+		$msg = (isset($_SESSION[Address::SESSION_ERROR])) ? $_SESSION[Address::SESSION_ERROR] : "";
+
+		Address::clearMsgError();
+
+		return $msg;
 
 	}
-		
+
+	public static function clearMsgError()
+	{
+
+		$_SESSION[Address::SESSION_ERROR] = NULL;
+
+	}
+
 
 
 }

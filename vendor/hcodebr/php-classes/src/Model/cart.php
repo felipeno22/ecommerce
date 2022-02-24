@@ -1,139 +1,105 @@
 <?php 
 namespace Hcode\Model;
 use \Hcode\DB\Sql;
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
+use \Hcode\Model;
 
-class Cart{
+class Cart  extends Model{
 
 		const SESSION = "Cart";
 		const SESSION_ERROR = "CartError";
-		private $idcart;
-		private $dessessionid;
-		private $iduser;
-		private $deszipcode;
-		private $vlfreight;
-		private $nrdays;
-		private $vlsubtotal;
-		private $vltotal;
 
 
-		public function setIdcart($idcart){
 
-			$this->idcart=$idcart;
+		
+	public static function getFromSession()
+	{
 
-		}
+		$cart = new Cart();
 
-		public function getIdcart(){
+		
+	
+		
 
+		
+		//verifica session  se esta definida e se tem idcart nessa sessao
+		if (isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
 
-			return $this->idcart;
-		}
+				
+			//se tiver idcart passa ele para bscar no banco pelo metodo get()
+			$cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
 
+				
 
-		public function setDessessionid($dessessionid){
+		} else {//se nao tiver definida ou/e nao tiver idcart
 
-			$this->dessessionid=$dessessionid;
-
-		}
-
-		public function getDessessionid(){
-
-
-			return $this->dessessionid;
-		}
-
-
-		public function setIduser($iduser){
-
-			$this->iduser=$iduser;
-
-		}
-
-		public function getIduser(){
+			
 
 
-			return $this->iduser;
-		}
+			$cart->getFromSessionID();//verifica se tem id  da sessao
 
 
-		public function setDeszipcode($deszipcode){
-
-			$this->deszipcode=$deszipcode;
-
-		}
-
-		public function getDeszipcode(){
+			//se nao houver id da sessao no banco
+			if (!(int)$cart->getidcart() > 0) {
 
 
-			return $this->deszipcode;
-		}
+				$data = [
+					'dessessionid'=>session_id()
 
 
-		public function setVlfreight($vlfreight){
-
-			$this->vlfreight=$vlfreight;
-
-		}
-
-		public function getVlfreight(){
+				];
 
 
-			return $this->vlfreight;
-		}
+				//verifica se esta logado mas nao com rota de administrador passando false no param
+				if (User::checkLogin(false)) {
+					
 
-		public function setNrdays($nrdays){
 
-			$this->nrdays=$nrdays;
+					$user = User::getFromSession();
+					
+					$data['iduser'] = $user->getiduser();
+
+					
+
+			}
+
+				
+			
+				$cart->setData($data);
+				$cart->save();
+				$cart->setToSession();	
+			
+
+
+			}
 
 		}
 
-		public function getNrdays(){
 
+		
+		return $cart;
 
-			return $this->nrdays;
-		}
-
-
-		public function setVlsubtotal($vlsubtotal){
-
-			$this->vlsubtotal=$vlsubtotal;
-
-		}
-
-		public function getVlsubtotal(){
-
-
-			return $this->vlsubtotal;
-		}
-
-
-
-		public function setVltotal($vltotal){
-
-			$this->vltotal=$vltotal;
-
-		}
-
-		public function getVltotal(){
-
-
-			return $this->vltotal;
-		}
-
+	}
+		
 //salvando carrinho
 	public function save()
 	{
 
+		
 		$sql = new Sql();
 
 		$results = $sql->select("CALL sp_carts_save(:idcart, :dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
 			':idcart'=>$this->getidcart(),
-			':dessessionid'=>$this->getDessessionid(),
+			':dessessionid'=>$this->getdessessionid(),
 			':iduser'=>$this->getiduser(),
 			':deszipcode'=>$this->getdeszipcode(),
 			':vlfreight'=>$this->getvlfreight(),
 			':nrdays'=>$this->getnrdays()
 		]);
+
+
+
+			$this->setData($results[0]);
 
 
 	}
@@ -151,13 +117,7 @@ class Cart{
 
 		if (count($results) > 0) {
 
-			$this->setIdcart($results[0]['idcart']);
-			$this->setIduser($results[0]['iduser']);
-			$this->setDessessionid($results[0]['dessessionid']);
-			$this->setDeszipcode($results[0]['deszipcode']);
-			$this->setVlfreight($results[0]['vlfreight']);
-			$this->setNrdays($results[0]['nrdays']);
-
+			$this->setData($results[0]);
 		}
 
 	}	
@@ -174,13 +134,7 @@ class Cart{
 
 		if (count($results) > 0) {
 
-			$this->setIdcart($results[0]['idcart']);
-			$this->setIduser($results[0]['iduser']);
-			$this->setDessessionid($results[0]['dessessionid']);
-			$this->setDeszipcode($results[0]['deszipcode']);
-			$this->setVlfreight($results[0]['vlfreight']);
-			$this->setNrdays($results[0]['nrdays']);
-
+			$this->setData($results[0]);
 		}
 
 	}
@@ -189,82 +143,19 @@ class Cart{
 	public function setToSession()
 	{
 
-		$_SESSION[Cart::SESSION]["idcart"] = $this->getIdcart();
-		$_SESSION[Cart::SESSION]["iduser"] = $this->getIduser();
-		$_SESSION[Cart::SESSION]["dessessionid"] = $this->getDessessionid();
-		$_SESSION[Cart::SESSION]["deszipcode"] = $this->getDeszipcode();
-		$_SESSION[Cart::SESSION]["vlfreight"] = $this->getVlfreight();
-		$_SESSION[Cart::SESSION]["nrdays"] = $this->getNrdays();
+		$_SESSION[Cart::SESSION] = $this->getValues();
 
 	}
 
 
 
-	public static function getFromSession()
-	{
-
-		$cart = new Cart();
-
-		//verifica session  se esta definida e se tem idcart nessa sessao
-		if (isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
-
-			//se tiver idcart passa ele para bscar no banco pelo metodo get()
-			$cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
-
-		} else {//se nao tiver definida ou/e nao tiver idcart
-
-			$cart->getFromSessionID();//verifica se tem id  da sessao
-
-
-			//se nao houver id da sessao no banco
-			if (!(int)$cart->getIdcart() > 0) {
-
-
-				$data = [
-					'dessessionid'=>session_id()
-				];
-
-
-				//verifica se esta logado mas nao com rota de administrador passando false no param
-				if (Usuario::checkLogin(false)) {
-					
-
-
-					$user = Usuario::getFromSession();
-					
-					$data['iduser'] = $user->getIduser();
-
-					
-
-			}
-
-			if(isset($data['iduser'])){
-				$cart->setIduser($data['iduser']);
-				
-			}
-			
-				$cart->setDessessionid($data['dessessionid']);
-				$cart->save();
-				$cart->setToSession();	
-			
-
-
-			}
-
-		}
-
-
-		
-		return $cart;
-
-	}
 
 
 public function addProducts(Product $product){
 
 	$sql=new Sql();
 
-	$sql->query("insert into tb_cartsproducts(idcart, idproduct)values(:idcart,:idproduct)",[":idcart"=> $this->getIdcart(),"idproduct"=>$product->getIdProduct()]);
+	$sql->query("insert into tb_cartsproducts(idcart, idproduct)values(:idcart,:idproduct)",[":idcart"=> $this->getidcart(),"idproduct"=>$product->getidproduct()]);
 
 
 		$this->getCalculateTotal();
@@ -278,12 +169,12 @@ public function removeProducts(Product $product, $all=false){
 
 	if($all){
 
-		$sql->query("update tb_cartsproducts  set dtremoved= now()  where idcart= :idcart and idproduct=:idproduct and  dtremoved is null ",[":idcart"=> $this->getIdcart(),"idproduct"=>$product->getIdProduct()]); 
+		$sql->query("update tb_cartsproducts  set dtremoved= now()  where idcart= :idcart and idproduct=:idproduct and  dtremoved is null ",[":idcart"=> $this->getidcart(),"idproduct"=>$product->getidproduct()]); 
 
 
 	}else{
 
-			$sql->query("update tb_cartsproducts  set dtremoved= now()  where idcart= :idcart and idproduct=:idproduct and  dtremoved is null limit 1",[":idcart"=> $this->getIdcart(),"idproduct"=>$product->getIdProduct()]); 
+			$sql->query("update tb_cartsproducts  set dtremoved= now()  where idcart= :idcart and idproduct=:idproduct and  dtremoved is null limit 1",[":idcart"=> $this->getidcart(),"idproduct"=>$product->getidproduct()]); 
 
 	}
 
@@ -298,37 +189,13 @@ public function getProducts(){
 	$sql=new Sql();
 
 
-	$rows= $sql->select(" select p.idproduct, p.desproduct, p.vlprice,p.vlwidth,p.vlheight,p.vllength, p.vlweight,p.desurl, count(*) as nrtotal, sum(p.vlprice) as vltotal from tb_cartsproducts cp inner join tb_products p on cp.idproduct=p.idproduct where cp.idcart= :idcart and cp.dtremoved is null group by p.idproduct, p.desproduct, p.vlprice,p.vlwidth,p.vlheight,p.vllength, p.vlweight ,p.desurl order by p.desproduct", [":idcart"=>$this->getIdcart()]);
-
-$i=0;
-	foreach ($rows as $key => $value) {
-
-		$caminho='';
-
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'res'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.$value["idproduct"].".jpg")){
-
-		 $caminho="/res/admin/img/".$value["idproduct"].".jpg";
-	
-
-	}else{
-
-			 $caminho="/res/admin/img/product.jpg";
-			
-	}
-		
-		
-	
-		$rows[$i]["desphoto"]=$caminho;
-		
-	$i++;	
-
-	}
-
-		
+	$rows= $sql->select(" select p.idproduct, p.desproduct, p.vlprice,p.vlwidth,p.vlheight,p.vllength, p.vlweight,p.desurl, count(*) as nrtotal, sum(p.vlprice) as vltotal from tb_cartsproducts cp inner join tb_products p on cp.idproduct=p.idproduct where cp.idcart= :idcart and cp.dtremoved is null group by p.idproduct, p.desproduct, p.vlprice,p.vlwidth,p.vlheight,p.vllength, p.vlweight ,p.desurl order by p.desproduct", [":idcart"=>$this->getidcart()]);
 
 
 
-	return $rows;
+return Product::checkList($rows);
+
+
 
 
 }
@@ -338,7 +205,7 @@ public function getProductsTotals(){
 		$sql=new Sql();
 
 		$results=$sql->select("select sum(p.vlprice) as vlprice, sum(p.vlwidth) as vlwidth, sum(p.vlheight) as vlheight, sum(p.vllength) as vllength, sum(p.vlweight) as vlweight , count(*) as nrqntd from tb_products p inner join tb_cartsproducts cp on cp.idproduct=p.idproduct
- where cp.idcart= :idcart and cp.dtremoved is null ",[":idcart"=>$this->getIdcart()]);
+ where cp.idcart= :idcart and cp.dtremoved is null ",[":idcart"=>$this->getidcart()]);
 
 
 if( count($results)>0){
@@ -390,7 +257,7 @@ public function setFreight($nrzipcode){
 
 		$qs= http_build_query([
 			'nCdEmpresa'=>'',
-			'nCdServico'=>"40010",
+			'nCdServico'=>"04014",
 			'sDsSenha'=>'',
 			'sCepOrigem'=>'09853120',
 			'sCepDestino'=>$nrzipcode,
@@ -400,7 +267,7 @@ public function setFreight($nrzipcode){
 			'nVlAltura'=>$totals['vlheight'],
 			'nVlLargura'=>$totals['vlwidth'],
 			'nVlDiametro'=>'0',
-			'sCdMaoPropria'=>'S',
+			'sCdMaoPropria'=>'N',
 			'nVlValorDeclarado'=>$totals['vlprice'],
 			'sCdAvisoRecebimento'=>'S']);
 
@@ -492,7 +359,15 @@ public static function formatValueToDecimal($value):float
 
 	}
 
-	
+	public function getValues()
+	{
+
+		$this->getCalculateTotal();
+
+		return parent::getValues();
+
+	}
+
 
 	public function getCalculateTotal()
 	{
@@ -501,11 +376,13 @@ public static function formatValueToDecimal($value):float
 
 		$totals = $this->getProductsTotals();
 
-		$this->setVlsubtotal($totals['vlprice']);
-		$this->setVltotal($totals['vlprice'] + (float)$this->getVlfreight());
+		$this->setvlsubtotal($totals['vlprice']);
+		$this->setvltotal($totals['vlprice'] + (float)$this->getvlfreight());
 
 	}
 
+
+	
 
 
 

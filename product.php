@@ -2,13 +2,13 @@
 
 
 use \Hcode\PageAdmin;
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
 use \Hcode\Model\Product;
 
 //rota tela  de lista de categorias
 $app->get('/admin/products',function (){
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
 
 	$products=Product::listAll();
 
@@ -23,7 +23,7 @@ $app->get('/admin/products',function (){
 //chama tela de criar categorias
 $app->get("/admin/products/create", function () {
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
 
  	
  	$admin= new PageAdmin();
@@ -38,11 +38,13 @@ $app->get("/admin/products/create", function () {
 $app->post('/admin/products/create',function (){
 
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
  		
  	$products = new Product();
 
- 	$products->save($_POST);
+ 	$products->setData($_POST);
+
+ 	$products->save();
 
  	header("Location: /admin/products");
  	exit;
@@ -53,7 +55,7 @@ $app->post('/admin/products/create',function (){
 //chama tela de alterar categoria
 $app->get("/admin/products/:idproducts", function ($idproduct) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 	$products = new Product();
 
@@ -66,15 +68,7 @@ $app->get("/admin/products/:idproducts", function ($idproduct) {
 	
 	$admin=new PageAdmin();
 
- 	$admin->setTlp("products-update",array("idproduct"=>$products->getIdproduct(),
- 									"desproduct"=>$products->getDesproduct(),
- 									"vlprice"=>$products->getVlprice(),
- 									"vlwidth"=>$products->getVlwidth(),
- 									"vlheight"=>$products->getVlheight(),
- 									"vllength"=>$products->getVllength(),
- 									"vlweight"=>$products->getVlweight(),
- 									"desurl"=>$products->getDesurl(),
- 									"desphoto"=>$products->getDesphoto()));
+ 	$admin->setTlp("products-update",array("products"=>$products->getValues()));
 
 });
 
@@ -85,14 +79,15 @@ $app->get("/admin/products/:idproducts", function ($idproduct) {
 $app->post("/admin/products/:idproduct", function ($idproduct) {
 
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 	$products = new Product();
 
 	$products->get((int)$idproduct);//convertendo o id passado para int 	
 
-
-	$products->update($_POST,$idproduct);
+	$products->setData($_POST);
+	
+	$products->update();
 
 	$products->changePhoto($_FILES['file']);//passando o nome do atributo name da tag de  upload
 
@@ -107,7 +102,7 @@ $app->post("/admin/products/:idproduct", function ($idproduct) {
 
 $app->get("/admin/products/:idproduct/delete", function ($idproduct) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 	$products = new Product();

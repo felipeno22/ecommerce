@@ -2,14 +2,14 @@
 
 
 use \Hcode\PageAdmin;
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
 use \Hcode\Model\Category;
 use \Hcode\Model\Product;
 
 //rota tela  de lista de categorias
 $app->get('/admin/categories',function (){
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
 
 	$categories=Category::listAll();
 	
@@ -23,7 +23,7 @@ $app->get('/admin/categories',function (){
 //chama tela de criar categorias
 $app->get("/admin/categories/create", function () {
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
 
  	
  	$admin= new PageAdmin();
@@ -38,11 +38,12 @@ $app->get("/admin/categories/create", function () {
 $app->post('/admin/categories/create',function (){
 
 
-	Usuario::verifyLogin();
+	User::verifyLogin();
  		
  	$category = new Category();
+ 	$category->setData($_POST);
 
- 	$category->save($_POST);
+ 	$category->save();
 
  	header("Location: /admin/categories");
  	exit;
@@ -53,7 +54,7 @@ $app->post('/admin/categories/create',function (){
 //chama tela de alterar categoria
 $app->get("/admin/categories/:idcategory", function ($idcategory) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 	$categories = new Category();
 
@@ -62,8 +63,7 @@ $app->get("/admin/categories/:idcategory", function ($idcategory) {
 
 	$admin=new PageAdmin();
 
- 	$admin->setTlp("categories-update",array("idcategory"=>$categories->getIdcategory(),
- 									"descategory"=>$categories->getDescategory()));
+ 	$admin->setTlp("categories-update",array("category"=>$categories->getValues()));
 
 });
 
@@ -74,14 +74,14 @@ $app->get("/admin/categories/:idcategory", function ($idcategory) {
 $app->post("/admin/categories/:idcategory", function ($idcategory) {
 
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 	$categories = new Category();
 
 	$categories->get((int)$idcategory);//convertendo o id passado para int 	
 
-	//var_dump($user);
-	$categories->update($_POST,$idcategory);
+	$categories->setData($_POST);
+	$categories->update();
 
  	header("Location: /admin/categories");
  	exit;
@@ -94,7 +94,7 @@ $app->post("/admin/categories/:idcategory", function ($idcategory) {
 
 $app->get("/admin/categories/:idcategory/delete", function ($idcategory) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 	$categories = new Category();
@@ -117,7 +117,7 @@ $app->get("/admin/categories/:idcategory/delete", function ($idcategory) {
 
 $app->get("/admin/categories/:idcategory/products", function ($idcategory) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 	$categories = new Category();
@@ -128,9 +128,8 @@ $app->get("/admin/categories/:idcategory/products", function ($idcategory) {
 
  	$admin= new PageAdmin();
 
- 	$admin->setTlp("categories-products",["idcategory"=>$categories->getIdcategory(),
- 											"descategory"=>$categories->getDescategory(),
- 											"productsRelated"=>$categories->getProducts(),
+ 	$admin->setTlp("categories-products",["category"=>$categories->getValues(),
+	 											"productsRelated"=>$categories->getProducts(),
  												"productsNotRelated"=>$categories->getProducts(false)]);
 
 
@@ -141,7 +140,7 @@ $app->get("/admin/categories/:idcategory/products", function ($idcategory) {
 
 $app->get("/admin/categories/:idcategory/products/:idproduto/add", function ($idcategory,$idproduct) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 	$categories = new Category();
@@ -165,7 +164,7 @@ $app->get("/admin/categories/:idcategory/products/:idproduto/add", function ($id
 
 $app->get("/admin/categories/:idcategory/products/:idproduto/remove", function ($idcategory,$idproduct) {
 
- 	Usuario::verifyLogin();
+ 	User::verifyLogin();
 
 
 	$categories = new Category();
