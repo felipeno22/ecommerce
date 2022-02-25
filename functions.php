@@ -1,6 +1,7 @@
 <?php
 
-use \Hcode\Model\Usuario;
+use \Hcode\Model\User;
+use \Hcode\Model\Cart;
 
 function formatPrice($vlprice){
 	
@@ -13,14 +14,38 @@ function formatPrice($vlprice){
 function checkLogin($inadmin=true){
 
 
-	return Usuario::checkLogin($inadmin);
+	return User::checkLogin($inadmin);
 }
 
 function getUserName(){
 
-$user= Usuario::getFromSession();
+$user= User::getFromSession();
 
-return $user->getDesperson();
+return $user->getdesperson();
+
+}
+
+
+
+function getCartNrQtd()
+{
+
+	$cart = Cart::getFromSession();
+
+	$totals = $cart->getProductsTotals();
+
+	return $totals['nrqntd'];
+
+}
+
+function getCartVlSubTotal()
+{
+
+	$cart = Cart::getFromSession();
+
+	$totals = $cart->getProductsTotals();
+
+	return formatPrice($totals['vlprice']);
 
 }
 
