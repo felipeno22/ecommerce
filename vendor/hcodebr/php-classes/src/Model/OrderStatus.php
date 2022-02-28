@@ -13,5 +13,16 @@ class OrderStatus extends Model {
 	const PAGO=7;
 	const ENTREGUE=8;
 
+
+	public static function listAll()
+	{
+
+		$sql = new Sql();
+
+		return $sql->select("SELECT * FROM tb_ordersstatus ORDER BY desstatus");
+
+	}
+
+
 }
 ?>
