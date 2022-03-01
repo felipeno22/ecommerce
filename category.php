@@ -11,11 +11,36 @@ $app->get('/admin/categories',function (){
 
 	User::verifyLogin();
 
-	$categories=Category::listAll();
+ 	$search= (isset($_GET['search'])) ? $_GET['search'] :'';
+ 	$page= (isset($_GET['page'])) ? (int)$_GET['page'] :1;
+
+		//$categories=Category::listAll(); 	
+
+ 		if($search != ''){
+
+ 		$categories=Category:: getPageSearch($search,$page);	
+
+ 		}else{
+
+
+ 		$categories=Category:: getPage($page);
+
+ 		}
+
+ 		$pages=[];
+
+
+
+for ($x=0; $x < $categories['totalPages'] ; $x++) { 
+
+	array_push($pages, ["href"=>"/admin/categories?".http_build_query(["page"=>$x+1,"search"=>$search]),
+						"text"=>$x+1]);
+}
 	
 	$admin=new PageAdmin();
 
- 	$admin->setTlp("categories",array("categories"=>$categories));
+ 	$admin->setTlp("categories",array("categories"=>$categories['data'],"search"=>$search,
+ 									"pages"=>$pages));
 
 });
 

@@ -154,67 +154,68 @@ class Order extends Model {
 
 	}
 
-	public static function getPage($page = 1, $itemsPerPage = 10)
-	{
 
-		$start = ($page - 1) * $itemsPerPage;
 
-		$sql = new Sql();
 
-		$results = $sql->select("
-			SELECT SQL_CALC_FOUND_ROWS *
-			FROM tb_orders a 
+	public  static function getPage($page=1, $itemsToPage=10){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows * FROM tb_orders a 
 			INNER JOIN tb_ordersstatus b USING(idstatus) 
 			INNER JOIN tb_carts c USING(idcart)
 			INNER JOIN tb_users d ON d.iduser = a.iduser
 			INNER JOIN tb_addresses e USING(idaddress)
 			INNER JOIN tb_persons f ON f.idperson = d.idperson
-			ORDER BY a.dtregister DESC
-			LIMIT $start, $itemsPerPage;
-		");
+			ORDER BY a.dtregister DESC limit ".$start.",".$itemsToPage." ");
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
 
-		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
-		return [
-			'data'=>$results,
-			'total'=>(int)$resultTotal[0]["nrtotal"],
-			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
-		];
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
 
 	}
 
-	public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
-	{
 
-		$start = ($page - 1) * $itemsPerPage;
+		public  static function getPageSearch($search ,$page=1, $itemsToPage=10){
 
-		$sql = new Sql();
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
 
-		$results = $sql->select("
-			SELECT SQL_CALC_FOUND_ROWS *
-			FROM tb_orders a 
+			
+
+			$result= $sql->select("select sql_calc_found_rows * FROM tb_orders a 
 			INNER JOIN tb_ordersstatus b USING(idstatus) 
 			INNER JOIN tb_carts c USING(idcart)
 			INNER JOIN tb_users d ON d.iduser = a.iduser
 			INNER JOIN tb_addresses e USING(idaddress)
 			INNER JOIN tb_persons f ON f.idperson = d.idperson
-			WHERE a.idorder = :id OR f.desperson LIKE :search
-			ORDER BY a.dtregister DESC
-			LIMIT $start, $itemsPerPage;
-		", [
-			':search'=>'%'.$search.'%',
-			':id'=>$search
-		]);
+			  where a.idorder like :id  or f.desperson like :search  ORDER BY a.dtregister DESC limit ".$start.",".$itemsToPage." ", ["search"=> "%".$search."%", "id"=> $search] );
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
 
-		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
-		return [
-			'data'=>$results,
-			'total'=>(int)$resultTotal[0]["nrtotal"],
-			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
-		];
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
 
 	}
+	
 
 }
 

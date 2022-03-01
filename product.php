@@ -10,13 +10,37 @@ $app->get('/admin/products',function (){
 
 	User::verifyLogin();
 
-	$products=Product::listAll();
+	//$products=Product::listAll();
 
-	
+	$search= (isset($_GET['search'])) ? $_GET['search'] :'';
+ 	$page= (isset($_GET['page'])) ? (int)$_GET['page'] :1;
+
+ 
+ 		if($search != ''){
+
+ 		$products=Product:: getPageSearch($search,$page);	
+
+ 		}else{
+
+
+ 		$products=Product:: getPage($page);
+
+ 		}
+
+ 		$pages=[];
+
+for ($x=0; $x < $products['totalPages'] ; $x++) { 
+
+	array_push($pages, ["href"=>"/admin/products?".http_build_query(["page"=>$x+1,"search"=>$search]),
+						"text"=>$x+1]);
+}
+ 	
+
 	
 	$admin=new PageAdmin();
 
- 	$admin->setTlp("products",array("products"=>$products));
+ 	$admin->setTlp("products",array("products"=>$products['data'], "search"=>$search,
+ 									"pages"=>$pages));
 
 });
 

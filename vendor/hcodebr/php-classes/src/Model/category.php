@@ -191,6 +191,58 @@ public  function delete($idcategory){
 	}
 
 
+
+	public  static function getPage($page=1, $itemsToPage=10){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows *  FROM db_ecommerce.tb_categories limit ".$start.",".$itemsToPage." ");
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
+
+
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
+
+	}
+
+
+		public  static function getPageSearch($search ,$page=1, $itemsToPage=10){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows *  FROM db_ecommerce.tb_categories 
+					 where descategory like :search  order by idcategory limit ".$start.",".$itemsToPage." ", ["search"=> "%".$search."%"] );
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
+
+
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
+
+	}
+	
+
+
+
 }
 
 
