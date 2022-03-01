@@ -8,12 +8,36 @@ $app->get("/admin/users", function () {
 
  	User::verifyLogin();
 
- 	$users=User::listAll();//chamando todos os usuario
+ 	$search= (isset($_GET['search'])) ? $_GET['search'] :'';
+ 	$page= (isset($_GET['page'])) ? (int)$_GET['page'] :1;
 
+ 	//$users=User::listAll();//chamando todos os usuario
+
+ 		if($search != ''){
+
+ 		$users=User:: getPageSearch($search,$page);	
+
+ 		}else{
+
+
+ 		$users=User:: getPage($page);
+
+ 		}
+
+ 		$pages=[];
+
+for ($x=0; $x < $users['totalPages'] ; $x++) { 
+
+	array_push($pages, ["href"=>"/admin/users?".http_build_query(["page"=>$x+1,"search"=>$search]),
+						"text"=>$x+1]);
+}
+ 	
 
  	$admin= new PageAdmin();
 
- 	$admin->setTlp("users",array("users"=>$users));
+ 	$admin->setTlp("users",array("users"=>$users['data'],
+ 								  "search"=>$search,
+ 									"pages"=>$pages));
 
 
 });

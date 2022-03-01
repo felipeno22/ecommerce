@@ -552,6 +552,58 @@ public static function setMsgError($msg)
 		}
 
 	}
+
+
+
+		public  static function getPage($page=1, $itemsToPage=10){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows * from tb_users u inner join tb_persons p 
+				on p.idperson=u.idperson  order by u.idperson limit ".$start.",".$itemsToPage." ");
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
+
+
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
+
+	}
+
+
+		public  static function getPageSearch($search ,$page=1, $itemsToPage=10){
+
+			$sql= new Sql();
+			$start=($page-1)* $itemsToPage;
+
+			
+
+			$result= $sql->select("select sql_calc_found_rows * from tb_users u inner join tb_persons p 
+				on p.idperson=u.idperson   where p.desperson like :search 
+				or p.desemail like :search or u.deslogin like :search order by u.idperson limit ".$start.",".$itemsToPage." ", ["search"=> "%".$search."%"] );
+		
+			$result2= $sql->select("select found_rows() as nrtotal");
+
+
+	
+			return ["data"=>$result,
+					"totalItems"=> (int)$result2[0]['nrtotal'],
+					"totalPages"=> ceil($result2[0]['nrtotal']/$itemsToPage)];
+
+
+									
+
+
+	}
 	
 
 
