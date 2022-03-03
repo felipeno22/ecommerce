@@ -2,6 +2,7 @@
 
 
 namespace Hcode;
+use \Hcode\Model\User;
 
 use Rain\Tpl;
 
@@ -28,7 +29,7 @@ class Page{
 	$config=array(
 		"tpl_dir"=>$_SERVER['DOCUMENT_ROOT'].$tpl_dir,
 		"cache_dir"=>$_SERVER['DOCUMENT_ROOT']."/cache-views/",
-		 "debug"         => false
+		 "debug"         => true
 
 	);
 
@@ -36,14 +37,25 @@ class Page{
 	Tpl::configure($config);
 	$this->tpl=new Tpl();
 
+
+
+ 
+	 $user = User::getFromSession();
+
+
+
+    $this->tpl->assign("user", $user->getdeslogin());
+	//$this->setData();
+
+
+	$this->setData($this->options["data"]);
 	
-//	$this->foreachPage($options["data"]);
 
 
-		// se o parametro header for ativo
-		//chama ele ou seja se for chamada a rota da tela de login
 
-	if ($this->options['header'] === true) $this->tpl->draw("header");
+	if ($this->options['header'] === true){
+	 $this->tpl->draw("header");
+	}
 
 
 
@@ -51,20 +63,24 @@ class Page{
 	}
 
 
-	private function foreachPage($data=array()){
+	private function setData($data = array())
+	{
 
-			foreach ($data as $key => $value) {
-		# code...
-		$this->tpl->assign($key,$value);
+		foreach ($data as $key => $value) {
+			$this->tpl->assign($key, $value);
+		}
+
 	}
 
-	}
 
+	
 
 	public function setTlp($name,$data=array(),$returnHtml=false){
 
 
-			$this->foreachPage($data);
+			$this->setData($data);
+
+		
 
 			return $this->tpl->draw($name,$returnHtml);
 
@@ -80,7 +96,10 @@ class Page{
 
 		// se o parametro footer for ativo
 		//chama ele ou seja se for chamada a rota da tela de login
-		if ($this->options['footer'] === true) $this->tpl->draw("footer");
+		if ($this->options['footer'] === true){
+			$this->tpl->draw("footer");
+
+		} 
 
 	}
 

@@ -4,22 +4,6 @@
 use \Hcode\PageAdmin;
 use \Hcode\Model\User;
 
-$app->get('/admin', function() {
-    
-    //verificando sessao do login
-    User::verifyLogin();
-
-
-	//echo "OK";
-
-	$page=new PageAdmin();
-
-	$page->setTlp("index");
-
-	
-
-});
-
 //criando rota para a tela de  login
 $app->get('/admin/login', function() {
     
@@ -172,6 +156,26 @@ $app->delete("/admin/users/:iduser", function ($iduser) {
 */
 
 
+
+$app->get('/admin', function() {
+    
+    //verificando sessao do login
+   User::verifyLogin();
+
+   $user = User::getFromSession();
+
+
+
+
+	
+
+	$page=new PageAdmin();
+
+	$page->setTlp("index");
+
+	
+
+});
 
 
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<?php if(!class_exists('Rain\Tpl')){exit;}?><!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
@@ -176,7 +176,7 @@ desired effect
               <!-- The user image in the navbar-->
               <img src="/res/admin/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
-              <span class="hidden-xs">{if="$user==null"}unnamed{else}{$user}{/if}</span>
+              <span class="hidden-xs"><?php if( $user==null ){ ?>unnamed<?php }else{ ?><?php echo htmlspecialchars( $user, ENT_COMPAT, 'UTF-8', FALSE ); ?><?php } ?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
@@ -184,7 +184,7 @@ desired effect
                 <img src="/res/admin/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                 <p>
-                  {if="$user==null"}unnamed{else}{$user}{/if} - Usuário
+                  <?php if( $user==null ){ ?>unnamed<?php }else{ ?><?php echo htmlspecialchars( $user, ENT_COMPAT, 'UTF-8', FALSE ); ?><?php } ?> - Usuário
                   <small>Member since Nov. 2012</small>
                 </p>
               </li>
@@ -234,7 +234,7 @@ desired effect
           <img src="/res/admin/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>{if="$user==null"}unnamed{else}{$user}{/if}</p>
+          <p><?php if( $user==null ){ ?>unnamed<?php }else{ ?><?php echo htmlspecialchars( $user, ENT_COMPAT, 'UTF-8', FALSE ); ?><?php } ?></p>
           <!-- Status -->
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
